@@ -1,7 +1,7 @@
 bl_info = {
     "name": "PSK/PSA Exporter",
     "author": "Colin Basnett",
-    "version": (1, 1, 1),
+    "version": (1, 2, 0),
     "blender": (2, 80, 0),
     "location": "File > Export > PSK Export (.psk)",
     "description": "PSK/PSA Export (.psk)",
@@ -21,6 +21,7 @@ if 'bpy' in locals():
     importlib.reload(psa_builder)
     importlib.reload(psa_exporter)
     importlib.reload(psa_operator)
+    importlib.reload(psa_linker)
 else:
     # if i remove this line, it can be enabled just fine
     from .psk import data as psk_data
@@ -31,6 +32,7 @@ else:
     from .psa import builder as psa_builder
     from .psa import exporter as psa_exporter
     from .psa import operator as psa_operator
+    from .psa import linker as psa_linker
 
 import bpy
 from bpy.props import IntProperty, CollectionProperty
@@ -58,9 +60,11 @@ def register():
     bpy.types.TOPBAR_MT_file_export.append(psa_menu_func)
     bpy.types.Scene.psa_action_list = CollectionProperty(type=psa_operator.ActionListItem)
     bpy.types.Scene.psa_action_list_index = IntProperty(name='index for list??', default=0)
+    psa_linker.register()
 
 
 def unregister():
+    psa_linker.unregister()
     del bpy.types.Scene.psa_action_list_index
     del bpy.types.Scene.psa_action_list
     bpy.types.TOPBAR_MT_file_export.remove(psa_menu_func)

@@ -43,6 +43,12 @@ class PsaExportOperator(Operator, ExportHelper):
         description='File path used for exporting the PSA file',
         maxlen=1024,
         default='')
+    should_invert_root_rotation : BoolProperty(
+        name='Invert Root Rotation',
+        description='Rotate the root bone 180 degrees on export. Use this '
+                    'if this rig was authored facing the opposite way from '
+                    'the rest of your animations',
+        default=False)
 
     def __init__(self):
         self.armature = None
@@ -54,6 +60,7 @@ class PsaExportOperator(Operator, ExportHelper):
         box.label(text='Actions', icon='ACTION')
         row = box.row()
         row.template_list('PSA_UL_ActionList', 'asd', scene, 'psa_action_list', scene, 'psa_action_list_index', rows=len(context.scene.psa_action_list))
+        layout.prop(self, 'should_invert_root_rotation')
 
     def is_action_for_armature(self, action):
         if len(action.fcurves) == 0:
@@ -98,6 +105,7 @@ class PsaExportOperator(Operator, ExportHelper):
 
         options = PsaBuilderOptions()
         options.actions = actions
+        options.should_invert_root_rotation = self.should_invert_root_rotation
         builder = PsaBuilder()
         psk = builder.build(context, options)
         exporter = PsaExporter(psk)

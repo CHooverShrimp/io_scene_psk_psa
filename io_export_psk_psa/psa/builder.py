@@ -1,9 +1,17 @@
+import math
+
+import mathutils
+
 from .data import *
 
 
 class PsaBuilderOptions(object):
     def __init__(self):
         self.actions = []
+        # When True, the root bone's rotation is flipped 180 degrees for
+        # every exported key. Useful when a rig was authored facing the
+        # opposite way from the rest of your rigs/animations.
+        self.should_invert_root_rotation = False
 
 
 # https://git.cth451.me/cth451/blender-addons/blob/master/io_export_unreal_psk_psa.py
@@ -107,6 +115,12 @@ class PsaBuilder(object):
                         rotation.x = -rotation.x
                         rotation.y = -rotation.y
                         rotation.z = -rotation.z
+                    elif options.should_invert_root_rotation:
+                        # Flip just the root bone's rotation 180 degrees
+                        # about Z to correct rigs authored facing the
+                        # opposite way from the rest.
+                        flip = mathutils.Quaternion((0.0, 0.0, 1.0), math.pi)
+                        rotation = flip @ rotation
 
                     key.location.x = location.x
                     key.location.y = location.y
